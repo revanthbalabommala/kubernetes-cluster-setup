@@ -1,0 +1,20 @@
+
+install minikube from internet
+
+-> To start minikube in local: minikube start
+    minikube will internally start kubernetes
+-> To view existing deployments in kubernetes: kubectl get deployments
+-> To delete all the deployments in Kubernetes: kubectl delete deployment --all
+-> To delete specific deployment in kubernetes only: kubectl delete deployment hello-node
+
+-> Command to create new deployment in Kubernetes:
+
+kubectl create deployment test-rest-service-1 --image=rbalabommala/test-project
+
+Note: image is the docker hub repo name
+Note: Once deployment is succesfully created, validate pods by this command
+  Kubectl get pods
+
+-> Command to expose deployment in Kubernetes:
+
+  kubectl expose deployment test-rest-service-1 --type=LoadBalancer --port 8080 --target-port 8080
