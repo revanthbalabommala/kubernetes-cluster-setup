@@ -1,0 +1,139 @@
+
+Minikube-Kubernetes-Cluster-Multi-Container-Setup-In-:
+
+install minikube from internet
+
+
+-> To start minikube in local: minikube start
+
+
+Deploy Container 1:
+===================
+
+-> Command to create new deployment in Kubernetes: kubectl apply -f deployment.yaml   
+-> validate pods: kubectl get pods
+-> validate deployments: kubectl get deployments
+
+
+deployment.yml:
+===============
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-spring-boot-application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-spring-boot-application
+  template:
+    metadata:
+      labels:
+        app: test-spring-boot-application
+    spec:
+      containers:
+        - name: test-spring-boot-application
+          image: rbalabommala/test-svc-local:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          
+ -> Command to create new service in Kubernetes: kubectl apply -f service.yaml              
+         
+service.yml:
+============
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-spring-service
+spec:
+  type: NodePort
+  selector:
+    app: test-spring-boot-application
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30005
+   
+kubectl apply -f service.yaml  
+
+-> expose service via minikube: minikube service 
+
+           
+    
+Note: image is the docker hub repo name
+Note: Once deployment is succesfully created, validate pods by this command
+  Kubectl get pods
+Note: command to get minikube ip address -> minikube ip
+
+Note: Due to some docker version issues, kubernetes cluster is not accessible via minikube ip address
+
+https://stackoverflow.com/questions/68336875/why-cant-i-access-my-kubernetes-cluster-using-the-minikube-ip
+
+Validation can be done in 2 ways:
+
+- Validate port and rest api with local ip address -> example http://127.0.0.1:51579/test/app
+- login into minikube docker image and run curl
+     minikube ssh
+     curl http://192.168.49.2:30005/test/app
+     
+     
+Deploy Container 2:
+===================
+ 
+ deployment.yml:
+===============
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-spring-boot-application-2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-spring-boot-application-2
+  template:
+    metadata:
+      labels:
+        app: test-spring-boot-application-2
+    spec:
+      containers:
+        - name: test-spring-boot-application
+          image: rbalabommala/test-svc-local:5.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          
+ -> Command to create new service in Kubernetes: kubectl apply -f service.yaml              
+         
+service.yml:
+============
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-spring-service-3
+spec:
+  type: NodePort
+  selector:
+    app: test-spring-boot-application-2
+  ports:
+  - name: http
+    port: 8083
+    targetPort: 8083
+    nodePort: 30001
+   
+kubectl apply -f service.yaml  
+
+-> expose service via minikube: minikube service 
+
+Validation can be done in 2 ways:
+
+- Validate port and rest api with local ip address -> example http://127.0.0.1:53758/test/app
+- login into minikube docker image and run curl
+     minikube ssh
+     curl http://192.168.49.2:30001/test/app
