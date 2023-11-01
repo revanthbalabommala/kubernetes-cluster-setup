@@ -5,16 +5,79 @@ install minikube from internet
     minikube will internally start kubernetes
 -> To view existing deployments in kubernetes: kubectl get deployments
 -> To delete all the deployments in Kubernetes: kubectl delete deployment --all
+-> To view the pods -> kubectl get pods
+-> To view the services -> kubectl get services
+-> To delete the services -> kubectl delete service service name
 -> To delete specific deployment in kubernetes only: kubectl delete deployment hello-node
 
--> Command to create new deployment in Kubernetes:
+-> Command to create new deployment in Kubernetes: kubectl apply -f deployment.yaml   
+-> validate pods: kubectl get pods
+-> validate deployments: kubectl get deployments
 
-kubectl create deployment test-rest-service-1 --image=rbalabommala/test-project
 
+deployment.yml:
+===============
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-spring-boot-application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-spring-boot-application
+  template:
+    metadata:
+      labels:
+        app: test-spring-boot-application
+    spec:
+      containers:
+        - name: test-spring-boot-application
+          image: rbalabommala/test-svc-local:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          
+ -> Command to create new service in Kubernetes: kubectl apply -f service.yaml              
+         
+service.yml:
+============
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-spring-service
+spec:
+  type: NodePort
+  selector:
+    app: test-spring-boot-application
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30005
+   
+kubectl apply -f service.yaml  
+
+-> expose service via minikube: minikube service 
+
+           
+    
 Note: image is the docker hub repo name
 Note: Once deployment is succesfully created, validate pods by this command
   Kubectl get pods
+Note: command to get minikube ip address -> minikube ip
 
--> Command to expose deployment in Kubernetes:
+Note: Due to some docker version issues, kubernetes cluster is not accessible via minikube ip address
 
-  kubectl expose deployment test-rest-service-1 --type=LoadBalancer --port 8080 --target-port 8080
+https://stackoverflow.com/questions/68336875/why-cant-i-access-my-kubernetes-cluster-using-the-minikube-ip
+
+Validation can be done in 2 ways:
+
+- Validate port and rest api with local ip address -> example http://127.0.0.1:51579/test/app
+- login into minikube docker image and run curl
+     minikube ssh
+     curl http://192.168.49.2:30005/test/app
+
+ 
