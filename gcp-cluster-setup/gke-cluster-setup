@@ -1,0 +1,16 @@
+
+1. Command to Create GKE Cluster
+
+gcloud components update
+
+gcloud auth activate-service-account test-service-account@carbon-dev-env.iam.gserviceaccount.com --key-file=carbon-dev-env-54dac758b7bd.json
+
+Pls make sure that following roles to service account, 
+   Roles - Artifact Registry Administrator, Editor, Kubernetes Engine Admin, Kubernetes Engine Cluster Admin, Storage Admin
+
+gcloud container clusters create test-cluster --num-nodes=3 --region=asia-southeast1-a
+
+NAME          LOCATION           MASTER_VERSION  MASTER_IP      MACHINE_TYPE  NODE_VERSION    NUM_NODES  STATUS
+test-cluster  asia-southeast1-a  1.27.3-gke.100  35.240.232.40  e2-medium     1.27.3-gke.100  3          RUNNING
+
+Once cluster is created, next you can deploy the images in pods
